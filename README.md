@@ -23,20 +23,48 @@
 
 ## 🚀 설치 및 실행
 
-### 1. 의존성 설치
+### 로컬 실행
+
+#### 1. 의존성 설치
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. 환경 변수 설정
+#### 2. 환경 변수 설정
 `.env` 파일을 생성하고 Etherscan API 키를 설정하세요:
 ```
 ETHERSCAN_API_KEY=your_etherscan_api_key_here
 ```
 
-### 3. 애플리케이션 실행
+#### 3. 애플리케이션 실행
 ```bash
 streamlit run app.py
+```
+
+### Streamlit Cloud 배포
+
+#### 1. GitHub에 코드 푸시
+```bash
+git add .
+git commit -m "Add Streamlit Cloud deployment"
+git push origin main
+```
+
+#### 2. Streamlit Cloud에서 배포
+1. [Streamlit Cloud](https://share.streamlit.io/)에 접속
+2. GitHub 계정 연결
+3. `eth-anomaly-lens` 저장소 선택
+4. 배포 설정:
+   - Main file path: `app.py`
+   - Python version: 3.9
+5. "Deploy" 클릭
+
+#### 3. 환경 변수 설정
+Streamlit Cloud 대시보드에서:
+1. Settings → Secrets
+2. 다음 내용 추가:
+```
+ETHERSCAN_API_KEY=your_etherscan_api_key_here
 ```
 
 ## 📖 사용법
@@ -68,6 +96,9 @@ ETH-Anomaly-Lens/
 ├── utils/
 │   └── analyzer.py     # 컨트랙트 분석 로직
 ├── requirements.txt    # Python 의존성
+├── packages.txt        # 시스템 의존성
+├── .streamlit/
+│   └── config.toml    # Streamlit 설정
 ├── .env               # 환경 변수 (사용자 생성)
 └── README.md         # 프로젝트 문서
 ```
@@ -85,6 +116,7 @@ ETH-Anomaly-Lens/
 - ✅ 시각화 개선 (더 나은 레이아웃, 색상 구분)
 - ✅ 에러 처리 강화
 - ✅ 분석 결과 저장 기능 추가
+- ✅ Streamlit Cloud 배포 지원
 
 ## 📞 지원
 

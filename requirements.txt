@@ -5,7 +5,7 @@ networkx
 web3
 matplotlib
 python-dotenv
-pillow==10.2.0
 requests
 numpy<2
-scipy 
+scipy
+pillow 
