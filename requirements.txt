@@ -1,0 +1,6 @@
+streamlit
+slither-analyzer
+graphviz
+networkx
+web3
+matplotlib 
