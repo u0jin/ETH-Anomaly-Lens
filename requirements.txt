@@ -3,4 +3,5 @@ slither-analyzer
 graphviz
 networkx
 web3
-matplotlib 
+matplotlib
+python-dotenv 
