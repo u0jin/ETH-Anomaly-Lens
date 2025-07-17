@@ -4,4 +4,8 @@ graphviz
 networkx
 web3
 matplotlib
-python-dotenv 
+python-dotenv
+pillow==10.2.0
+requests
+numpy<2
+scipy 

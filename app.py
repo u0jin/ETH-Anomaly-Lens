@@ -2,7 +2,36 @@ import streamlit as st
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import json
+from datetime import datetime
 from utils.analyzer import analyze_contract
+
+# 한글 폰트 설정
+import matplotlib.font_manager as fm
+import platform
+
+# 시스템에 설치된 한글 폰트 찾기
+def get_korean_font():
+    if platform.system() == 'Darwin':  # macOS
+        # macOS에서 사용 가능한 한글 폰트들
+        korean_fonts = ['AppleGothic', 'Apple SD Gothic Neo', 'NanumGothic', 'Malgun Gothic']
+        for font in korean_fonts:
+            try:
+                fm.findfont(font)
+                return font
+            except:
+                continue
+    elif platform.system() == 'Windows':
+        return 'Malgun Gothic'
+    else:  # Linux
+        return 'DejaVu Sans'
+    
+    # 기본값
+    return 'DejaVu Sans'
+
+# 폰트 설정
+plt.rcParams['font.family'] = get_korean_font()
+plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 
 st.set_page_config(
     page_title="ETH Anomaly Lens",
@@ -53,28 +82,47 @@ with col1:
                             else:
                                 st.success("✅ 위험 함수가 발견되지 않았습니다.")
                         st.header("🔄 함수 호출 구조")
-                        fig, ax = plt.subplots(figsize=(12, 8))
-                        pos = nx.spring_layout(graph, k=1)
-                        node_colors = [
-                            'red' if node in dangerous_functions else 'lightblue'
-                            for node in graph.nodes()
-                        ]
+                        fig, ax = plt.subplots(figsize=(14, 10))
+                        
+                        # 더 나은 레이아웃 알고리즘 사용
+                        pos = nx.spring_layout(graph, k=2, iterations=50) if len(graph.nodes()) > 1 else nx.spring_layout(graph)
+                        
+                        # 노드 색상 및 크기 설정
+                        node_colors = ['red' if node in dangerous_functions else 'lightblue' for node in graph.nodes()]
+                        node_sizes = [3000 if node in dangerous_functions else 2000 for node in graph.nodes()]
+                        
+                        # 엣지 색상 설정 (위험 함수로 가는 엣지는 빨간색)
+                        edge_colors = []
+                        for u, v in graph.edges():
+                            if v in dangerous_functions:
+                                edge_colors.append('red')
+                            else:
+                                edge_colors.append('gray')
+                        
+                        # 그래프 그리기
                         nx.draw(
                             graph, pos,
                             node_color=node_colors,
-                            node_size=2000,
-                            font_size=10,
+                            node_size=node_sizes,
+                            font_size=9,
                             font_weight='bold',
                             arrows=True,
-                            edge_color='gray',
+                            edge_color=edge_colors,
+                            width=2,
                             with_labels=True,
-                            ax=ax
+                            ax=ax,
+                            arrowstyle='->',
+                            arrowsize=20
                         )
+                        
+                        # 범례
                         legend_elements = [
-                            mpatches.Patch(color='red', label='위험 함수'),
-                            mpatches.Patch(color='lightblue', label='일반 함수')
+                            mpatches.Patch(color='red', label='Dangerous Functions'),
+                            mpatches.Patch(color='lightblue', label='Normal Functions')
                         ]
-                        ax.legend(handles=legend_elements, loc='upper left')
+                        ax.legend(handles=legend_elements, loc='upper left', fontsize=12)
+                        ax.set_title("Function Call Structure", fontsize=16, fontweight='bold', pad=20)
+                        
                         st.pyplot(fig)
                         st.header("📋 함수 호출 관계")
                         if graph.edges():
@@ -85,6 +133,32 @@ with col1:
                                     st.write(f"🔵 `{caller}` → `{callee}`")
                         else:
                             st.info("함수 간 호출 관계가 없습니다.")
+                        
+                        # 분석 결과 저장
+                        if st.button("💾 분석 결과 저장"):
+                            analysis_result = {
+                                "contract_address": contract_address,
+                                "analysis_date": datetime.now().isoformat(),
+                                "total_functions": len(graph.nodes()),
+                                "dangerous_functions": dangerous_functions,
+                                "function_calls": list(graph.edges()),
+                                "graph_data": {
+                                    "nodes": list(graph.nodes()),
+                                    "edges": list(graph.edges())
+                                }
+                            }
+                            
+                            filename = f"analysis_{contract_address}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+                            with open(filename, 'w', encoding='utf-8') as f:
+                                json.dump(analysis_result, f, ensure_ascii=False, indent=2)
+                            
+                            st.success(f"분석 결과가 {filename}에 저장되었습니다!")
+                            st.download_button(
+                                label="📥 결과 파일 다운로드",
+                                data=json.dumps(analysis_result, ensure_ascii=False, indent=2),
+                                file_name=filename,
+                                mime="application/json"
+                            )
                     else:
                         st.warning("분석할 함수를 찾을 수 없습니다.")
                 except Exception as e:
