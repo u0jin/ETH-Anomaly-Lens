@@ -34,6 +34,7 @@ with col1:
         placeholder="0x...",
         help="분석할 스마트 컨트랙트의 주소를 입력하세요"
     )
+    st.info("⚠️ 반드시 0x로 시작하는 스마트 컨트랙트 주소만 입력하세요! (트랜잭션 해시, 지갑 주소 X)")
     if st.button("🔍 컨트랙트 분석하기"):
         if contract_address:
             with st.spinner("컨트랙트를 분석하고 있습니다..."):
