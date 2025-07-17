@@ -1,0 +1,27 @@
+{
+  "contract_address": "0x1234567890123456789012345678901234567890",
+  "analysis_date": "2025-07-17T13:56:58.889928",
+  "total_functions": 5,
+  "dangerous_functions": [
+    "test_function"
+  ],
+  "function_calls": [
+    [
+      "func1",
+      "func2"
+    ]
+  ],
+  "graph_data": {
+    "nodes": [
+      "func1",
+      "func2",
+      "func3"
+    ],
+    "edges": [
+      [
+        "func1",
+        "func2"
+      ]
+    ]
+  }
+}
