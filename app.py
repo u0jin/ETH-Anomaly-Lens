@@ -517,31 +517,14 @@ with tab2:
     with viz_tab3:
         import re
         import unicodedata
-        # cause 영어 변환 맵 (상세)
+        # cause 영어 변환 맵 (실제 incidents 데이터 기반 상세)
         cause_map = {
-            "재진입 공격": "Reentrancy",
-            "정수 오버플로우": "Integer Overflow",
-            "플래시론 공격": "Flash Loan",
-            "크로스체인 브리지 취약점": "Cross-Chain Bridge",
-            "거래소 보안": "Exchange Security",
-            "오라클 조작": "Oracle Manipulation",
-            "내부자 공격": "Insider Attack",
-            "API 키 유출": "API Key Leak",
+            "브리지 취약점": "Bridge Vulnerability",
+            "거래소 운영 부실": "Exchange Mismanagement",
+            "플래시론 공격": "Flash Loan Attack",
+            "지갑 보안 취약점": "Wallet Security Vulnerability",
             "클라우드 서비스 취약점": "Cloud Service Vulnerability",
-            "거래소 운영 실수": "Exchange Operational Error",
-            "블록 타임스탬프 조작": "Block Timestamp Manipulation",
-            "블록 넘버 조작": "Block Number Manipulation",
-            "플래시론": "Flash Loan",
-            "오버플로우": "Overflow",
-            "언더플로우": "Underflow",
-            "자체파괴": "Selfdestruct",
-            "위험 함수": "Dangerous Function",
-            "오라클 취약점": "Oracle Vulnerability",
-            "브리지 해킹": "Bridge Hack",
-            "사기": "Fraud",
-            "피싱": "Phishing",
-            "기타": "Miscellaneous",
-            # 필요시 추가
+            "거래소 보안 취약점": "Exchange Security Vulnerability",
         }
         def romanize_korean(text):
             try:
