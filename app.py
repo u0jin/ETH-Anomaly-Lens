@@ -479,9 +479,15 @@ with tab2:
 
     # 손실액 분석
     with viz_tab2:
+        # 플랫폼 영어 변환 맵
+        platform_map = {
+            "🔵 이더리움 (Ethereum)": "Ethereum",
+            "🟣 거래소 (Exchange)": "Exchange"
+        }
         platform_losses = {}
         for incident in filtered_incidents:
             platform = incident["platform"]
+            platform_en = platform_map.get(platform, platform)
             loss_str = incident["loss"]
             loss_str = loss_str.replace("$", "")
             if "B" in loss_str:
@@ -492,7 +498,7 @@ with tab2:
                 loss = float(loss_str.replace("K", "")) * 1000
             else:
                 loss = float(loss_str)
-            platform_losses[platform] = platform_losses.get(platform, 0) + loss
+            platform_losses[platform_en] = platform_losses.get(platform_en, 0) + loss
         if platform_losses:
             fig, ax = plt.subplots(figsize=(10, 6))
             platforms = list(platform_losses.keys())
@@ -509,10 +515,20 @@ with tab2:
 
     # 공격 유형 분석
     with viz_tab3:
+        # cause 영어 변환 맵
+        cause_map = {
+            "재진입 공격": "Reentrancy",
+            "정수 오버플로우": "Integer Overflow",
+            "플래시론 공격": "Flash Loan",
+            "크로스체인 브리지 취약점": "Cross-Chain Bridge",
+            "거래소 보안": "Exchange Security",
+            # 기타 한글 cause도 필요시 추가
+        }
         attack_types = {}
         for incident in filtered_incidents:
             cause = incident["cause"]
-            attack_types[cause] = attack_types.get(cause, 0) + 1
+            cause_en = cause_map.get(cause, cause)
+            attack_types[cause_en] = attack_types.get(cause_en, 0) + 1
         if attack_types:
             fig, ax = plt.subplots(figsize=(12, 6))
             causes = list(attack_types.keys())
@@ -621,31 +637,6 @@ with tab2:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("""
-        ### �� Key Security Risks
-        
-        **1. Reentrancy Attacks**
-        - State changes during external calls
-        - Key cause of The DAO hack
-        
-        **2. Integer Overflow**
-        - Unexpected results from large number operations
-        - BeautyChain hack case
-        
-        **3. Flash Loan Attacks**
-        - Attacking without borrowing funds
-        - bZx hack case
-        
-        **4. Cross-Chain Bridge Vulnerabilities**
-        - Security vulnerabilities during asset transfers
-        - Poly Network hack case
-        
-        **5. Exchange Security**
-        - Security vulnerabilities in centralized exchanges
-        - Mt. Gox, Bitfinex hack cases
-        """)
-    
-    with col2:
         st.markdown("""
         ### 🛡️ Security Recommendations
         
