@@ -516,25 +516,53 @@ with tab2:
     # 공격 유형 분석
     with viz_tab3:
         import re
-        # cause 영어 변환 맵
+        import unicodedata
+        # cause 영어 변환 맵 (상세)
         cause_map = {
             "재진입 공격": "Reentrancy",
             "정수 오버플로우": "Integer Overflow",
             "플래시론 공격": "Flash Loan",
             "크로스체인 브리지 취약점": "Cross-Chain Bridge",
             "거래소 보안": "Exchange Security",
-            # 기타 한글 cause도 필요시 추가
+            "오라클 조작": "Oracle Manipulation",
+            "내부자 공격": "Insider Attack",
+            "API 키 유출": "API Key Leak",
+            "클라우드 서비스 취약점": "Cloud Service Vulnerability",
+            "거래소 운영 실수": "Exchange Operational Error",
+            "블록 타임스탬프 조작": "Block Timestamp Manipulation",
+            "블록 넘버 조작": "Block Number Manipulation",
+            "플래시론": "Flash Loan",
+            "오버플로우": "Overflow",
+            "언더플로우": "Underflow",
+            "자체파괴": "Selfdestruct",
+            "위험 함수": "Dangerous Function",
+            "오라클 취약점": "Oracle Vulnerability",
+            "브리지 해킹": "Bridge Hack",
+            "사기": "Fraud",
+            "피싱": "Phishing",
+            "기타": "Miscellaneous",
+            # 필요시 추가
         }
+        # 한글을 영문 알파벳으로 음차(romanization) 함수
+        def romanize_korean(text):
+            try:
+                from unidecode import unidecode
+                return unidecode(text)
+            except ImportError:
+                return text  # unidecode가 없으면 원본 반환
         attack_types = {}
         for incident in filtered_incidents:
             cause = incident["cause"]
-            cause_en = cause_map.get(cause, cause)
-            # 알파벳/숫자/공백만 남기고 나머지 제거
-            cause_en_clean = re.sub(r'[^a-zA-Z0-9 ]', '', cause_en)
-            # 만약 영어가 하나도 없으면 Other로 대체
-            if not re.search(r'[a-zA-Z]', cause_en_clean):
-                cause_en_clean = "Other"
-            attack_types[cause_en_clean] = attack_types.get(cause_en_clean, 0) + 1
+            # 이모지/특수문자 제거
+            cause_no_emoji = ''.join(c for c in cause if c.isalnum() or c.isspace())
+            cause_en = cause_map.get(cause_no_emoji.strip(), None)
+            if not cause_en:
+                # 한글이 포함되어 있으면 romanize
+                if re.search(r'[가-힣]', cause_no_emoji):
+                    cause_en = romanize_korean(cause_no_emoji.strip())
+                else:
+                    cause_en = cause_no_emoji.strip()
+            attack_types[cause_en] = attack_types.get(cause_en, 0) + 1
         if attack_types:
             fig, ax = plt.subplots(figsize=(12, 6))
             causes = list(attack_types.keys())
