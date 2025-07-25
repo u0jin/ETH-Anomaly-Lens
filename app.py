@@ -515,6 +515,7 @@ with tab2:
 
     # 공격 유형 분석
     with viz_tab3:
+        import re
         # cause 영어 변환 맵
         cause_map = {
             "재진입 공격": "Reentrancy",
@@ -528,7 +529,12 @@ with tab2:
         for incident in filtered_incidents:
             cause = incident["cause"]
             cause_en = cause_map.get(cause, cause)
-            attack_types[cause_en] = attack_types.get(cause_en, 0) + 1
+            # 알파벳/숫자/공백만 남기고 나머지 제거
+            cause_en_clean = re.sub(r'[^a-zA-Z0-9 ]', '', cause_en)
+            # 만약 영어가 하나도 없으면 Other로 대체
+            if not re.search(r'[a-zA-Z]', cause_en_clean):
+                cause_en_clean = "Other"
+            attack_types[cause_en_clean] = attack_types.get(cause_en_clean, 0) + 1
         if attack_types:
             fig, ax = plt.subplots(figsize=(12, 6))
             causes = list(attack_types.keys())
