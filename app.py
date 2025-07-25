@@ -399,23 +399,23 @@ with tab2:
     col1, col2, col3 = st.columns(3)
     with col1:
         st.metric(
-            label="총 사건 수",
+            label="Total Incidents",
             value=len(incidents),
-            delta=f"{len(incidents)}개 주요 사건"
+            delta=f"{len(incidents)} major incidents"
         )
     with col2:
         ethereum_incidents = len([inc for inc in incidents if inc["platform"] == "🔵 이더리움 (Ethereum)"])
         st.metric(
-            label="이더리움 사건",
+            label="Ethereum Incidents",
             value=ethereum_incidents,
-            delta="스마트 컨트랙트/브리지 중심"
+            delta="Smart contract/bridge-centered"
         )
     with col3:
-        exchange_incidents = len([inc for inc in incidents if inc["platform"] == "�� 거래소 (Exchange)"])
+        exchange_incidents = len([inc for inc in incidents if inc["platform"] == "🟣 거래소 (Exchange)"])
         st.metric(
-            label="거래소 사건",
+            label="Exchange Incidents",
             value=exchange_incidents,
-            delta="중앙화 거래소 중심"
+            delta="Centralized exchange-centered"
         )
     
     st.markdown("---")
@@ -424,29 +424,29 @@ with tab2:
     col1, col2 = st.columns([1, 2])
     with col1:
         platform_filter = st.selectbox(
-            "플랫폼 선택",
-            ["전체", "🔵 이더리움 (Ethereum)", "🟣 거래소 (Exchange)"],
-            help="분석할 플랫폼을 선택하세요"
+            "Select Platform",
+            ["All", "🔵 이더리움 (Ethereum)", "🟣 거래소 (Exchange)"],
+            help="Select a platform for analysis"
         )
     with col2:
         search_term = st.text_input(
-            "사건 검색",
-            placeholder="Poly, Ronin, FTX, Bybit 등...",
-            help="사건명으로 검색하세요"
+            "Search Incident",
+            placeholder="Poly, Ronin, FTX, Bybit etc.",
+            help="Search incident names"
         )
     
     filtered_incidents = incidents
-    if platform_filter != "전체":
+    if platform_filter != "All":
         filtered_incidents = [inc for inc in incidents if inc["platform"] == platform_filter]
     
     if search_term:
         filtered_incidents = [inc for inc in filtered_incidents if search_term.lower() in inc["incident"].lower()]
     
     # 시각화 섹션
-    st.subheader("📈 시각화 분석")
+    st.subheader("📈 Visual Analysis")
     
     # 탭으로 시각화 분리
-    viz_tab1, viz_tab2, viz_tab3, viz_tab4 = st.tabs(["📊 연도별 분석", "💰 손실액 분석", "🎯 공격 유형", "📅 타임라인"])
+    viz_tab1, viz_tab2, viz_tab3, viz_tab4 = st.tabs(["📊 Yearly Analysis", "💰 Loss Analysis", "🎯 Attack Type", "📅 Timeline"])
     
     # 연도별 분석
     with viz_tab1:
@@ -460,9 +460,9 @@ with tab2:
             counts = [years[year] for year in years_list]
             colors = plt.cm.viridis(np.linspace(0, 1, len(years_list)))
             bars = ax.bar(years_list, counts, color=colors, alpha=0.8, edgecolor='black', linewidth=1)
-            ax.set_xlabel('연도', fontsize=14, fontweight='bold')
-            ax.set_ylabel('사건 수', fontsize=14, fontweight='bold')
-            ax.set_title('연도별 보안 사건사고 발생 현황', fontsize=16, fontweight='bold', pad=20)
+            ax.set_xlabel('Year', fontsize=14, fontweight='bold')
+            ax.set_ylabel('Number of Incidents', fontsize=14, fontweight='bold')
+            ax.set_title('Incidents per Year', fontsize=16, fontweight='bold', pad=20)
             ax.grid(True, alpha=0.3, axis='y')
             for bar, count in zip(bars, counts):
                 height = bar.get_height()
@@ -473,9 +473,9 @@ with tab2:
             plt.close(fig)
             col1, col2 = st.columns(2)
             with col1:
-                st.info(f"**가장 많은 사건 발생 연도**: {max(years, key=years.get)}년 ({max(years.values())}건)")
+                st.info(f"**Year with Most Incidents**: {max(years, key=years.get)} ({max(years.values())})")
             with col2:
-                st.info(f"**분석 기간**: {min(years.keys())}년 ~ {max(years.keys())}년")
+                st.info(f"**Period**: {min(years.keys())} ~ {max(years.keys())}")
 
     # 손실액 분석
     with viz_tab2:
@@ -500,9 +500,9 @@ with tab2:
             colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99']
             wedges, texts, autotexts = ax.pie(losses, labels=platforms, autopct='%1.1f%%', 
                                              colors=colors[:len(platforms)], startangle=90, textprops={'fontsize': 13})
-            ax.set_title('플랫폼별 손실액 분포', fontsize=16, fontweight='bold', pad=20)
+            ax.set_title('Loss Distribution by Platform', fontsize=16, fontweight='bold', pad=20)
             ax.legend(wedges, [f'{p}: ${l/1000000:.1f}M' for p, l in zip(platforms, losses)],
-                     title="플랫폼별 손실액", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1), fontsize=13)
+                     title="Loss by Platform", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1), fontsize=13)
             plt.tight_layout()
             st.pyplot(fig, clear_figure=True)
             plt.close(fig)
@@ -521,8 +521,8 @@ with tab2:
             bars = ax.barh(y_pos, counts, color='lightcoral', alpha=0.8, edgecolor='darkred')
             ax.set_yticks(y_pos)
             ax.set_yticklabels(causes, fontsize=13)
-            ax.set_xlabel('발생 횟수', fontsize=14, fontweight='bold')
-            ax.set_title('공격 유형별 발생 빈도', fontsize=16, fontweight='bold', pad=20)
+            ax.set_xlabel('Number of Incidents', fontsize=14, fontweight='bold')
+            ax.set_title('Incident Count by Attack Type', fontsize=16, fontweight='bold', pad=20)
             ax.grid(True, alpha=0.3, axis='x')
             for bar, count in zip(bars, counts):
                 width = bar.get_width()
@@ -554,15 +554,15 @@ with tab2:
             counts = [year_count[y] for y in years]
             losses = [year_loss[y] for y in years]
             fig, ax1 = plt.subplots(figsize=(12, 6))
-            ax1.plot(years, counts, marker='o', color='#4e79a7', label='사건 수', linewidth=2)
-            ax1.set_xlabel('연도', fontsize=14)
-            ax1.set_ylabel('사건 수', fontsize=14, color='#4e79a7')
+            ax1.plot(years, counts, marker='o', color='#4e79a7', label='Incidents', linewidth=2)
+            ax1.set_xlabel('Year', fontsize=14)
+            ax1.set_ylabel('Number of Incidents', fontsize=14, color='#4e79a7')
             ax1.tick_params(axis='y', labelcolor='#4e79a7', labelsize=13)
-            ax1.set_title('연도별 보안 사건사고 트렌드', fontsize=16, fontweight='bold', pad=10)
+            ax1.set_title('Incident Trend by Year', fontsize=16, fontweight='bold', pad=10)
             ax1.grid(True, axis='y', alpha=0.2, linestyle='--')
             ax2 = ax1.twinx()
-            ax2.plot(years, [l/1_000_000 for l in losses], marker='s', color='#e15759', label='손실액(M USD)', linewidth=2, linestyle='dashed')
-            ax2.set_ylabel('손실액 (백만 달러)', fontsize=14, color='#e15759')
+            ax2.plot(years, [l/1_000_000 for l in losses], marker='s', color='#e15759', label='Loss (M USD)', linewidth=2, linestyle='dashed')
+            ax2.set_ylabel('Loss (Million USD)', fontsize=14, color='#e15759')
             ax2.tick_params(axis='y', labelcolor='#e15759', labelsize=13)
             lines1, labels1 = ax1.get_legend_handles_labels()
             lines2, labels2 = ax2.get_legend_handles_labels()
@@ -571,28 +571,28 @@ with tab2:
             st.pyplot(fig, clear_figure=True)
             plt.close(fig)
         else:
-            st.info('해당 조건에 맞는 사건이 없습니다.')
+            st.info('No incidents found for the selected condition.')
     
     st.markdown("---")
     
     # 상세 사건사고 목록 (개선된 UI)
-    st.subheader("📋 상세 사건사고 분석")
+    st.subheader("📋 Detailed Incident Analysis")
     
     # 정렬 옵션 UI 개선
     col1, col2 = st.columns([1, 1])
     with col1:
         sort_by = st.selectbox(
-            "정렬 기준",
-            ["날짜순", "손실액순", "플랫폼별"],
-            help="사건을 정렬할 기준을 선택하세요"
+            "Sort by",
+            ["Date", "Loss", "Platform"],
+            help="Select a sorting criterion for incidents"
         )
     with col2:
-        show_details = st.checkbox("상세 정보 표시", value=True)
+        show_details = st.checkbox("Show Details", value=True)
 
     # 정렬 로직
-    if sort_by == "날짜순":
+    if sort_by == "Date":
         sorted_incidents = sorted(filtered_incidents, key=lambda x: x['date'])
-    elif sort_by == "손실액순":
+    elif sort_by == "Loss":
         def parse_loss(incident):
             loss_str = incident["loss"].replace("$", "").replace("B", "000000000").replace("M", "000000").replace("K", "000")
             return float(loss_str)
@@ -609,93 +609,93 @@ with tab2:
     📅 {incident['date']} | {incident['platform']}
   </div>
   <div style='font-size:1.05rem; margin-bottom:8px;'>💡 {incident['description']}</div>
-  <div style='font-size:1.05rem; margin-bottom:8px;'><b>🎯 원인:</b> <span style='color:#e15759; font-weight:600'>{incident['cause']}</span></div>
-  <div style='font-size:1.05rem; margin-bottom:8px;'><b>💸 손실액:</b> <span style='color:#1976d2; font-weight:600'>{incident['loss']}</span></div>
-  <a href='{incident['source']}' target='_blank' style='display:inline-block; margin-top:6px; padding:6px 14px; background:#1976d2; color:#fff; border-radius:6px; text-decoration:none; font-size:0.98rem; font-weight:500;'>🔗 공식 출처 바로가기</a>
+  <div style='font-size:1.05rem; margin-bottom:8px;'><b>🎯 Cause:</b> <span style='color:#e15759; font-weight:600'>{incident['cause']}</span></div>
+  <div style='font-size:1.05rem; margin-bottom:8px;'><b>💸 Loss:</b> <span style='color:#1976d2; font-weight:600'>{incident['loss']}</span></div>
+  <a href='{incident['source']}' target='_blank' style='display:inline-block; margin-top:6px; padding:6px 14px; background:#1976d2; color:#fff; border-radius:6px; text-decoration:none; font-size:0.98rem; font-weight:500;'>🔗 Official Source</a>
 </div>
 """, unsafe_allow_html=True)
     
     # 보안 교훈 및 권장사항 (개선된 섹션)
-    st.subheader("💡 보안 교훈 및 권장사항")
+    st.subheader("💡 Security Lessons and Recommendations")
     
     col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("""
-        ### 🚨 주요 보안 위험 요소
+        ### �� Key Security Risks
         
-        **1. 재진입 공격 (Reentrancy)**
-        - 함수 실행 중 외부 호출 시 상태 변경 전에 호출
-        - The DAO 해킹의 주요 원인
+        **1. Reentrancy Attacks**
+        - State changes during external calls
+        - Key cause of The DAO hack
         
-        **2. 정수 오버플로우**
-        - 큰 숫자 연산 시 예상치 못한 결과
-        - BeautyChain 해킹 사례
+        **2. Integer Overflow**
+        - Unexpected results from large number operations
+        - BeautyChain hack case
         
-        **3. 플래시론 공격**
-        - 대출 없이 대량 자금을 임시로 빌려 공격
-        - bZx 플랫폼 해킹 사례
+        **3. Flash Loan Attacks**
+        - Attacking without borrowing funds
+        - bZx hack case
         
-        **4. 크로스체인 브리지 취약점**
-        - 체인 간 자산 이동 시 보안 허점
-        - Poly Network 해킹 사례
+        **4. Cross-Chain Bridge Vulnerabilities**
+        - Security vulnerabilities during asset transfers
+        - Poly Network hack case
         
-        **5. 거래소 보안**
-        - 중앙화 거래소의 보안 시스템 취약점
-        - Mt. Gox, Bitfinex 해킹 사례
+        **5. Exchange Security**
+        - Security vulnerabilities in centralized exchanges
+        - Mt. Gox, Bitfinex hack cases
         """)
     
     with col2:
         st.markdown("""
-        ### 🛡️ 보안 권장사항
+        ### 🛡️ Security Recommendations
         
-        **스마트 컨트랙트 개발**
-        - ✅ 검증 및 감사 필수
-        - ✅ 보안 모범 사례 준수
-        - ✅ 정기적인 업데이트
+        **Smart Contract Development**
+        - ✅ Mandatory verification and auditing
+        - ✅ Adherence to security best practices
+        - ✅ Regular updates
         
-        **자산 보관**
-        - ✅ 멀티시그 지갑 사용
-        - ✅ 분산화된 자산 보관
-        - ✅ 콜드 스토리지 활용
+        **Asset Storage**
+        - ✅ Use multi-signature wallets
+        - ✅ Decentralized asset storage
+        - ✅ Cold storage utilization
         
-        **거래소 이용**
-        - ✅ 신뢰할 수 있는 거래소 선택
-        - ✅ 2FA 인증 활성화
-        - ✅ 정기적인 보안 점검
+        **Exchange Usage**
+        - ✅ Select trusted exchanges
+        - ✅ Enable 2FA
+        - ✅ Regular security checks
         
-        **개인 보안**
-        - ✅ 강력한 비밀번호 사용
-        - ✅ 피싱 사이트 주의
-        - ✅ 백업 및 복구 계획 수립
+        **Personal Security**
+        - ✅ Strong password usage
+        - ✅ Phishing site awareness
+        - ✅ Develop and implement backup plans
         """)
     
     # 추가 통계 및 인사이트
     st.markdown("---")
-    st.subheader("📊 추가 통계 및 인사이트")
+    st.subheader("📊 Additional Statistics and Insights")
     
     col1, col2, col3 = st.columns(3)
     
     with col1:
         st.info("""
-        **🔍 분석 결과**
-        - 이더리움 사건: 스마트 컨트랙트 취약점 중심
-        - 비트코인 사건: 거래소 보안 문제 중심
-        - 최근 트렌드: 크로스체인 브리지 공격 증가
+        **🔍 Analysis Results**
+        - Ethereum incidents: Smart contract vulnerabilities centered
+        - Bitcoin incidents: Centralized exchange security issues centered
+        - Recent trend: Increased cross-chain bridge attacks
         """)
     
     with col2:
         st.warning("""
-        **⚠️ 주의사항**
-        - 이 데이터는 교육 목적으로만 사용
-        - 실제 보안 감사에는 전문 도구 사용
-        - 정기적인 보안 업데이트 필수
+        **⚠️ Caution**
+        - This data is for educational purposes only
+        - Professional tools are required for actual security audits
+        - Mandatory regular security updates
         """)
     
     with col3:
         st.success("""
-        **💪 예방 방법**
-        - 보안 모범 사례 학습
-        - 정기적인 보안 점검
-        - 전문가 자문 구하기
+        **💪 Prevention Methods**
+        - Learning security best practices
+        - Regular security checks
+        - Consult with experts
         """) 
