@@ -543,26 +543,28 @@ with tab2:
             "기타": "Miscellaneous",
             # 필요시 추가
         }
-        # 한글을 영문 알파벳으로 음차(romanization) 함수
         def romanize_korean(text):
             try:
                 from unidecode import unidecode
                 return unidecode(text)
             except ImportError:
-                return text  # unidecode가 없으면 원본 반환
+                return text
         attack_types = {}
         for incident in filtered_incidents:
             cause = incident["cause"]
-            # 이모지/특수문자 제거
             cause_no_emoji = ''.join(c for c in cause if c.isalnum() or c.isspace())
             cause_en = cause_map.get(cause_no_emoji.strip(), None)
             if not cause_en:
-                # 한글이 포함되어 있으면 romanize
                 if re.search(r'[가-힣]', cause_no_emoji):
                     cause_en = romanize_korean(cause_no_emoji.strip())
                 else:
                     cause_en = cause_no_emoji.strip()
-            attack_types[cause_en] = attack_types.get(cause_en, 0) + 1
+            # 알파벳/숫자/공백만 남기고 모두 제거
+            cause_en_clean = re.sub(r'[^a-zA-Z0-9 ]', '', cause_en)
+            cause_en_clean = cause_en_clean.strip()
+            if not cause_en_clean:
+                continue  # 완전히 빈 값은 그래프에서 제외
+            attack_types[cause_en_clean] = attack_types.get(cause_en_clean, 0) + 1
         if attack_types:
             fig, ax = plt.subplots(figsize=(12, 6))
             causes = list(attack_types.keys())
