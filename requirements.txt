@@ -9,5 +9,5 @@ requests
 numpy<2
 scipy
 pillow
-fpdf2==2.8.3
+fpdf2==2.8.8
 reportlab==4.4.2 
